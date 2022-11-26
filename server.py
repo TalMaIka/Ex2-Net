@@ -89,25 +89,22 @@ def server(host: str, port: int) -> None:
 
         # Prepare the server socket
         # * Fill in start (1)
-        #  PORT = 9999
-        #  HOST = "127.0.0.1"
-
         server_socket.bind((host, port))
-        server_socket.listen()
+        server_socket.listen(1)
         # * Fill in end (1)
+
         threads = []
         print(f"Listening on {host}:{port}")
 
         while True:
             try:
                 # Establish connection with client.
-                # * Fill in start (2)
-                client_socket, address = server_socket.accept()
-                print(f"Connecred to:{address}")
-                # * Fill in end (2)
+
+                client_socket, address =  server_socket.accept()# * Fill in start (2) # * Fill in end (2)
 
                 # Create a new thread to handle the client request
-                thread = threading.Thread(target=client_handler, args=(client_socket, address))
+                thread = threading.Thread(target=client_handler, args=(
+                    client_socket, address))
                 thread.start()
                 threads.append(thread)
             except KeyboardInterrupt:
@@ -127,11 +124,8 @@ def client_handler(client_socket: socket.socket, client_address: tuple[str, int]
     with client_socket:  # closes the socket when the block is exited
         print(f"Conection established with {client_addr}")
         while True:
-            # *  Fill in start (3)
-            data = client_socket.recv(8180)   #  Data (at most 65440 bits = 8180 bytes):
-            print("Get from client ", client_address, ":", data)
 
-            # * Fill in end (3)
+            data = client_socket.recv(api.BUFFER_SIZE) # * Fill in start (3) # * Fill in end (3)
             if not data:
                 break
             try:
@@ -151,10 +145,7 @@ def client_handler(client_socket: socket.socket, client_address: tuple[str, int]
                     f"{client_prefix} Sending response of length {len(response)} bytes")
 
                 # * Fill in start (4)
-                data.decode()
-                capitalizedata = data.upper()
-                client_socket.send(bytes(capitalizedata.encode()))
-                client_socket.close()
+                client_socket.sendall(response)
                 # * Fill in end (4)
 
             except Exception as e:
